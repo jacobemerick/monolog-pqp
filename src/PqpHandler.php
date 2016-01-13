@@ -2,6 +2,8 @@
 
 namespace Jacobemerick\MonologPqp;
 
+use Exception;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Logger;
 use Particletree\Pqp\Console;
@@ -31,7 +33,15 @@ class PqpHandler extends AbstractProcessingHandler
      */
     protected function write(array $record)
     {
-        // if error, log to error
+        if (
+            $record['level'] >= Logger::ERROR &&
+            isset($record['context']['exception']) &&
+            $record['context']['exception'] instanceof Exception
+        ) {
+            $this->console->logError($record['context']['exception']);
+            return;
+        }
+
         $this->console->log($record['formatted']);
     }
 
@@ -40,6 +50,6 @@ class PqpHandler extends AbstractProcessingHandler
      */
     protected function getDefaultFormatter()
     {
-        return new LineFormatter();
+        return new LineFormatter("%channel%.%level_name%: %message%\n");
     }
 }
