@@ -1,0 +1,30 @@
+{
+    "name": "jacobemerick/monolog-pqp",
+    "description": "Monolog handler that interfaces with PHP Quick Profiler",
+    "require": {
+        "monolog/monolog": "^1.17",
+        "particletree/pqp": "^1.0",
+        "php": ">=5.3.0"
+    },
+    "require-dev": {
+        "codeclimate/php-test-reporter": "dev-master",
+        "phpunit/phpunit": "^4.7"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "jacobemerick",
+            "email": "jpemeric@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Jacobemerick\\MonologPqp\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Jacobemerick\\MonologPqp\\": "tests/"
+        }
+    }
+}
