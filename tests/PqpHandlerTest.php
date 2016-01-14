@@ -2,6 +2,7 @@
 
 namespace Jacobemerick\MonologPqp;
 
+use Exception;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Logger;
 use Particletree\Pqp\Console;
@@ -40,6 +41,83 @@ class PqpHandlerTest extends PHPUnit_Framework_TestCase
 
         $this->assertAttributeInstanceOf('Particletree\Pqp\Console', 'console', $pqpHandler);
         $this->assertAttributeSame($console, 'console', $pqpHandler);
+    }
+
+    /**
+     * @dataProvider dataWrite
+     */
+    public function testWrite($message, $level)
+    {
+        $reflectedHandler = new ReflectionClass('Jacobemerick\MonologPqp\PqpHandler');
+        $reflectedWriteMethod = $reflectedHandler->getMethod('write');
+        $reflectedWriteMethod->setAccessible(true);
+
+        $pqpHandler = new PqpHandler(new Console());
+        $write = $reflectedWriteMethod->invokeArgs($pqpHandler, array(
+            array(
+                'level' => $level,
+                'formatted' => $message,
+            )
+        ));
+
+        $expectedConsole = new Console();
+        $expectedConsole->log($message);
+
+        $this->assertAttributeEquals($expectedConsole, 'console', $pqpHandler);
+    }
+
+    public function dataWrite()
+    {
+        return array(
+            array(
+                'message' => 'site.DEBUG: Puppies',
+                'level' => Logger::DEBUG,
+            ),
+            array(
+                'message' => 'site.ERROR: Kittens',
+                'level' => Logger::ERROR,
+            ),
+        );
+    }
+
+    /**
+     * @dataProvider dataWriteExceptions
+     */
+    public function testWriteExceptions($exception, $level)
+    {
+        $reflectedHandler = new ReflectionClass('Jacobemerick\MonologPqp\PqpHandler');
+        $reflectedWriteMethod = $reflectedHandler->getMethod('write');
+        $reflectedWriteMethod->setAccessible(true);
+
+        $pqpHandler = new PqpHandler(new Console());
+        $write = $reflectedWriteMethod->invokeArgs($pqpHandler, array(
+            array(
+                'level' => $level,
+                'context' => array('exception' => $exception),
+            )
+        ));
+
+        $expectedConsole = new Console();
+        $expectedConsole->logError($exception);
+
+        $this->assertAttributeEquals($expectedConsole, 'console', $pqpHandler);
+    }
+
+    public function dataWriteExceptions()
+    {
+        $exceptionError = new Exception('Testing ERROR level');
+        $exceptionCritical = new Exception('Testing CRITICAL level');
+
+        return array(
+            array(
+                'exception' => new Exception('Testing ERROR level'),
+                'level' => Logger::ERROR,
+            ),
+            array(
+                'exception' => new Exception('Testing CRITICAL level'),
+                'level' => Logger::CRITICAL,
+            ),
+        );
     }
 
     public function testDefaultFormatterInstanceOfLineFormatter()
