@@ -53,7 +53,7 @@ class PqpHandlerTest extends PHPUnit_Framework_TestCase
         $reflectedWriteMethod->setAccessible(true);
 
         $pqpHandler = new PqpHandler(new Console());
-        $write = $reflectedWriteMethod->invokeArgs($pqpHandler, array(
+        $reflectedWriteMethod->invokeArgs($pqpHandler, array(
             array(
                 'level' => $level,
                 'formatted' => $message,
@@ -90,7 +90,7 @@ class PqpHandlerTest extends PHPUnit_Framework_TestCase
         $reflectedWriteMethod->setAccessible(true);
 
         $pqpHandler = new PqpHandler(new Console());
-        $write = $reflectedWriteMethod->invokeArgs($pqpHandler, array(
+        $reflectedWriteMethod->invokeArgs($pqpHandler, array(
             array(
                 'level' => $level,
                 'context' => array('exception' => $exception),
@@ -105,9 +105,6 @@ class PqpHandlerTest extends PHPUnit_Framework_TestCase
 
     public function dataWriteExceptions()
     {
-        $exceptionError = new Exception('Testing ERROR level');
-        $exceptionCritical = new Exception('Testing CRITICAL level');
-
         return array(
             array(
                 'exception' => new Exception('Testing ERROR level'),
